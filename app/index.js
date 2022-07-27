@@ -22,7 +22,6 @@ const opts = yargs(hideBin(process.argv))
   }).argv;
 
 /**
- * 
  * @param {string} userInput 
  * @param {Object} flags
  * @param {string} flags.key

@@ -16,16 +16,12 @@
   },
   "devDependencies": {
     "mocha": "^10.0.0",
-    "nock": "^13.2.9",
-    "why-is-node-running": "^2.2.2",
-    "nyc": "^15.1.0"
+    "nock": "^13.2.9"
   },
   "mocha": {
     "diff": true,
     "extension": [
-      "js",
-      "cjs",
-      "mjs"
+      "js"
     ],
     "package": "./package.json",
     "reporter": "spec",
@@ -33,7 +29,6 @@
     "timeout": "2000",
     "ui": "bdd",
     "watch-files": [
-      "lib/**/*.js",
       "test/**/*.js"
     ],
     "watch-ignore": [
