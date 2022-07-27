@@ -1,5 +1,6 @@
-import { validateFromCSV, filterUserInputAndRun, generateOutput } from '../app/index.js';
+import { Main, validateFromCSV, filterUserInputAndRun, generateOutput } from '../app/index.js';
 import { CSV_DATA, READ_FILE_ERROR } from './utils/file-methods.test.js';
+import ENV from '../app/services/environment.js';
 import assert from 'assert';
 import nock from 'nock';
 import ValidationResponse from '../app/classes/validation-response.js';
@@ -80,6 +81,7 @@ describe('called from index.js', () => {
     assert.equal(generateOutput(new ValidationResponse({
       status: 'Unexpected Status'
     }, 'original address')), 'original address -> Unexpected Status');
+    assert.equal(generateOutput(undefined), 'NO DATA');
   })
 
   it('returns error if input file is missing', async () => {
@@ -106,6 +108,14 @@ describe('called from index.js', () => {
 
   it('properly processes raw CSV data', async () => {
     await validateFromCSV(CSV_DATA);
+    assert.equal(persistentParams.logs.length, 4);
+    assert.deepEqual(persistentParams.logs, persistentParams.logMatch);
+  });
+
+  it('updates key and timeout based on flags', async () => {
+    await Main(CSV_DATA, { key: 'test_key', timeout: 2000 });
+    assert.equal(ENV.API_KEY, 'test_key');
+    assert.equal(ENV.STDIN_TIMEOUT, 2000);
     assert.equal(persistentParams.logs.length, 4);
     assert.deepEqual(persistentParams.logs, persistentParams.logMatch);
   });

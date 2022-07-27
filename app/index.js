@@ -22,6 +22,25 @@ const opts = yargs(hideBin(process.argv))
   }).argv;
 
 /**
+ * 
+ * @param {string} userInput 
+ * @param {Object} flags
+ * @param {string} flags.key
+ * @param {number} flags.timeout
+ * @returns 
+ */
+export async function Main(userInput, flags) {
+  const { key, timeout } = flags;
+  if (key) {
+    ENV.setValue('API_KEY', key);
+  }
+  if (timeout && parseInt(timeout, 10) > 0) {
+    ENV.setValue('STDIN_TIMEOUT', timeout);
+  }
+  return await filterUserInputAndRun(userInput);
+}
+
+/**
  * Parse the initial user input
  * Runs recursively to detect lists of files.
  * If the last line ends with `.csv` or `.txt`
@@ -79,8 +98,9 @@ export async function validateFromCSV(fileOutput) {
  * @returns {string} '`{originalInput}` -> `{status|formattedaddress}`'
  */
 export function generateOutput(validation) {
-  const { status, originalInput, finalOutput } = validation;
   if (!validation) return 'NO DATA'
+
+  const { status, originalInput, finalOutput } = validation;
   switch (status) {
     case null:
     case "":
@@ -96,16 +116,13 @@ export function generateOutput(validation) {
   }
 }
 
-if (opts.k) ENV.setValue('API_KEY', opts.k);
-if (opts.t) ENV.setValue('STDIN_TIMEOUT', opts.t);
-
 if (opts._[0]) {
-  filterUserInputAndRun(opts._[0]);
+  Main(opts._[0], { key: opts.key, timeout: opts.t });
 } else {
   const timer = setTimeout(() => process.stdin.pause(), ENV.STDIN_TIMEOUT);
   process.stdin.on('data', (data) => {
     clearTimeout(timer);
-    filterUserInputAndRun(data.toString());
+    Main(data.toString(), { key: opts.key, timeout: opts.t });
     process.stdin.pause()
   });
 }

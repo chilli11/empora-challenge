@@ -38,9 +38,9 @@ added some layers of complexity that I would need more time to abstract out.
 
 - It can also accept a `\n`-separated list of `.txt` or `.csv` files. This will cause each
 file to be processed asynchronously.
-- The `API_KEY` can be changed at runtime by passing the `k` flag
-- There is a timeout set on the check for data on `stdin`. It can be changed in the `env.js` file, or
-at runtime by passing the `t` flag. It is in milliseconds.
+- The `API_KEY` can be changed at runtime by passing the`--key` or `-k` flag
+- There is a timeout set in milliseconds on the check for data on `stdin`. It can be changed in the `env.js` file,
+or at runtime by passing the `--timeout` or `-t` flag.
 
 ### Classes
 
