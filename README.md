@@ -42,6 +42,26 @@ file to be processed asynchronously.
 - There is a timeout set on the check for data on `stdin`. It can be changed in the `env.js` file, or
 at runtime by passing the `t` flag. It is in milliseconds.
 
+### Classes
+
+The `AddressDTO` and `ValidationResponse` models are designed to allow for changes in the data structures
+that feed them, the CSV data and API responses, respectively. 
+
+Differently structured CSV data will work as long as it includes the three required fields: 'Street Address', 
+'City', and 'Postal Code'. If any of those fields are named differently in the data, an update to the constructor
+can account for that without changing any of the logic.
+
+`ValidationResponse` similarly allows for any changes in the API response structure to be handled in the
+constructor without modifying any of the application logic.
+
+### Services
+
+I chose to create the `environment` service so that the API key and `stdin` timeout could be overridden by
+runtime arguments. 
+
+The `address-validator` service is intended to be a place for any validation logic that is independent from the presentation
+and other business logic. That could include addition of other address-validator.net APIs, data transforms, etc.
+
 ### Notes
 
 - I use Windows, so `cat` created some issues with PowerShell. I have tested this using `type`, instead

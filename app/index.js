@@ -3,7 +3,7 @@
 import { consoleError } from './utils/error-handler.js';
 import { getFileOutput, parseCSV } from './utils/file-methods.js';
 import { hideBin } from 'yargs/helpers'
-import { validateAddress } from './services/validation.js';
+import { validateAddress } from './services/address-validator.js';
 import AddressDTO from './classes/address-dto.js';
 import ENV from './services/environment.js';
 import ValidationResponse from './classes/validation-response.js';
