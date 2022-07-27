@@ -23,7 +23,8 @@ const opts = yargs(hideBin(process.argv))
 
 /**
  * Parse the initial user input
- * If the list line ends with `.csv` or `.txt`
+ * Runs recursively to detect lists of files.
+ * If the last line ends with `.csv` or `.txt`
  * it will be parsed as a list of file paths.
  * @param {string} userInput 
  */
@@ -36,27 +37,26 @@ export async function filterUserInputAndRun(userInput) {
         if (list.length > 1) {
           return list.forEach(line => filterUserInputAndRun(line));
         } else {
-          filteredInput = await getFileOutput(list[0].trim());
+          let fileOutput = await getFileOutput(list[0].trim());
+          return filterUserInputAndRun(fileOutput);
         }
       } catch (err) {
-        consoleError('ERROR', err);
+        consoleError('Error', err);
       }
     }
-    return await checkCSVAsync(filteredInput);
+    return await validateFromCSV(filteredInput);
   }
 }
 
 /**
- * Takes CSV data from `filterUserInputAndRun` and runs the 
+ * Takes CSV data and runs the 
  * CSV parsing and address validation
  * @param {string} fileOutput CSV data
  */
-export async function checkCSVAsync(fileOutput) {
+export async function validateFromCSV(fileOutput) {
   try {
     if (fileOutput) {
-      let done = false;
       const csv = parseCSV(fileOutput);
-      csv.on('end', () => done = true);
       for await (const record of csv) {
         const addressDTO = new AddressDTO(record);
         const { data } = await validateAddress(addressDTO);
@@ -68,7 +68,7 @@ export async function checkCSVAsync(fileOutput) {
       return;
     }
   } catch (err) {
-    consoleError('ERROR', err);
+    consoleError('Error', err);
   }
 }
 

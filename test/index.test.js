@@ -1,4 +1,4 @@
-import { checkCSVAsync, filterUserInputAndRun, generateOutput } from '../app/index.js';
+import { validateFromCSV, filterUserInputAndRun, generateOutput } from '../app/index.js';
 import { CSV_DATA, READ_FILE_ERROR } from './utils/file-methods.test.js';
 import assert from 'assert';
 import nock from 'nock';
@@ -25,16 +25,14 @@ const persistentParams = {
 
 describe('called from index.js', () => {
   before(() => {
-    console.log = (...params) => {
-      persistentParams.logs.push(...params);
-    };
+    console.log = (...params) => persistentParams.logs.push(...params);
     console.error = console.log;
   });
 
   beforeEach(() => {
     persistentParams.logs = [];
     scopes = [
-      nock('https://api.address-validator.net').get('/api/verify')
+      nock(apiSegments.uri).get(apiSegments.path)
         .query(true)
         .reply(200, {
           status: 'VALID',
@@ -77,17 +75,15 @@ describe('called from index.js', () => {
       postalcode: '00000-1111'
     }, 'original address')), 'original address -> Address, City, 00000-1111');
     assert.equal(generateOutput(new ValidationResponse({
-      status: 'INVALID',
-      formattedaddress: 'Valid formatted address'
+      status: 'INVALID'
     }, 'original address')), 'original address -> Invalid Address');
     assert.equal(generateOutput(new ValidationResponse({
-      status: 'Unexpected Status',
-      formattedaddress: 'Valid formatted address'
+      status: 'Unexpected Status'
     }, 'original address')), 'original address -> Unexpected Status');
   })
 
   it('returns error if input file is missing', async () => {
-    await filterUserInputAndRun('dummy-text.csv');
+    await filterUserInputAndRun('dummy-text.csv', validateFromCSV);
     assert.deepEqual(persistentParams.logs, [READ_FILE_ERROR]);
   })
 
@@ -109,17 +105,16 @@ describe('called from index.js', () => {
   });
 
   it('properly processes raw CSV data', async () => {
-    await checkCSVAsync(CSV_DATA);
+    await validateFromCSV(CSV_DATA);
     assert.equal(persistentParams.logs.length, 4);
     assert.deepEqual(persistentParams.logs, persistentParams.logMatch);
   });
 
   // this test ends before the responses are logged. I haven't been able to nail it down yet
   // it('properly processes a list of files', async () => {
-  //   const input = `./test/test-addresses.csv\n./test/test-addresses-2.csv\n`;
+  //   const input = `./test/test-addresses.csv\n./test/test-addresses.csv\n`;
   //   await filterUserInputAndRun(input);
-  //   assert.equal(persistentParams.logs.length, 620);
-  //   assert.deepEqual(persistentParams.logs, persistentParams.logMatch);
+  //   assert.equal(persistentParams.logs.length, 8);
   // })
 
   after(() => {

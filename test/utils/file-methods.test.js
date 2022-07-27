@@ -29,37 +29,33 @@ const PARSED_CSV_DATA = [
 ];
 
 export const READ_FILE_ERROR = 'Read File Error: ENOENT';
-const CSV_PARSE_ERROR = 'CSV Parse Error: CSV_INVALID_ARGUMENT';
+export const CSV_PARSE_ERROR = 'CSV Parse Error: CSV_INVALID_ARGUMENT';
 
 const originalLog = console.log;
 const originalError = console.error;
-const persistentParams = {
-  logs: [],
-}
+const persistentParams = { logs: [] };
 
 describe('file methods', () => {
   before(() => {
-    console.log = (...params) => {
-      persistentParams.logs.push(...params);
-    };
+    console.log = (...params) => persistentParams.logs.push(...params);
     console.error = console.log;
   });
   beforeEach(() => {
     persistentParams.logs = [];
   });
 
-  it('should error when file does not exist', async () => {
+  it('getFileOutput: should error when file does not exist', async () => {
     const output = await getFileOutput('dummy-file.csv');
     assert.equal(output, undefined);
     assert.deepEqual(persistentParams.logs, [READ_FILE_ERROR]);
   });
 
-  it('should return file data as string', async () => {
+  it('getFileOutput: should return file data as string', async () => {
     const output = await getFileOutput('test/test-addresses.csv');
     assert.equal(output, CSV_DATA);
   });
 
-  it('should return csv data as an array', async () => {
+  it('parseCSV: should return csv data as individual records', async () => {
     let output = [];
     const csv = parseCSV(CSV_DATA);
     for await (const record of csv) {
@@ -68,7 +64,7 @@ describe('file methods', () => {
     assert.deepEqual(output, PARSED_CSV_DATA);
   });
 
-  it('should error when csv is invalid', async () => {
+  it('parseCSV: should error when csv is invalid', async () => {
     const csv = parseCSV(undefined);
     assert.equal(csv, undefined);
     assert.deepEqual(persistentParams.logs, [CSV_PARSE_ERROR]);

@@ -20,7 +20,9 @@ export default class {
     this.PostalCode = address['Postal Code'];
 
     let missing = Object.keys(this).filter(k => !this[k]);
-    if (missing.length) throw `${this.originalInput} -> ERROR: Missing parameter(s): ${missing.join(', ')}`;
+    if (missing.length) {
+      throw new Error(`${this.originalInput} -> ERROR: Missing parameter(s): ${missing.join(', ')}`);
+    }
   }
 
   get originalInput() {

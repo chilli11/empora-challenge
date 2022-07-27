@@ -44,7 +44,6 @@ This will cause each file to be processed asynchronously.
 - There is a timeout set on the check for data on `stdin`. It can be changed in the `env.js` file, or
 at runtime by passing the `t` flag. It is in milliseconds.
 
-
 ### Notes
 
 - I use windows, so `cat` created some issues with `stdin`. I have tested this using `type`, instead
@@ -56,3 +55,5 @@ at runtime by passing the `t` flag. It is in milliseconds.
     |- test-addresses-2.csv // same as above, repeated 154x
     |- test-list.txt // to test passing multiple files
  ```
+- If the last line of data ends in `.txt` or `.csv` it will be treated as a list of files. On
+recursion only lines pointing to valid files will be evaluated.
